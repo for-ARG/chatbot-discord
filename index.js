@@ -8,14 +8,13 @@ const client = new Client({
     ]
 });
 
-// ID du salon texte
+
 const allowedChannelId = "1409818460099448832";
 
-// Liste des mots-clés à trouver
-// On regroupe "animal/poulet" et "symbole/※" comme une seule étape chacune
+
 const motsCles = ["rituel", "animalOuPoule", "symboleOuEmoji", "montjuzet"];
 
-// Suivi des mots-clés déjà trouvés
+
 let motsTrouves = new Set();
 
 client.once('ready', async () => {
@@ -32,7 +31,8 @@ client.on('messageCreate', async message => {
     if (message.author.bot) return;
     if (message.channel.id !== allowedChannelId) return;
 
-    const contenu = message.content.toLowerCase();
+    const contenu = message.content; // on garde la casse pour les symboles
+    const contenuLower = contenu.toLowerCase(); // pour les mots normaux
 
     const reponses = {
         "rituel": "Bien vu, le groupe fait un rituel tous les vendredis midis.",
@@ -45,22 +45,22 @@ client.on('messageCreate', async message => {
 
     let motValide = false;
 
-    // Gérer "animal" et "poulet"
-    if ((contenu.includes("animal") || contenu.includes("poulet")) && !motsTrouves.has("animalOuPoule")) {
-        message.reply(reponses[contenu.includes("poulet") ? "poulet" : "animal"]);
+
+    if ((contenuLower.includes("animal") || contenuLower.includes("poulet")) && !motsTrouves.has("animalOuPoule")) {
+        message.reply(contenuLower.includes("poulet") ? reponses["poulet"] : reponses["animal"]);
         motsTrouves.add("animalOuPoule");
         motValide = true;
     } 
-    // Gérer "symbole" et "※"
-    else if ((contenu.includes("symbole") || contenu.includes("※")) && !motsTrouves.has("symboleOuEmoji")) {
-        message.reply(reponses[contenu.includes("symbole") ? "symbole" : "※"]);
+
+    else if ((contenuLower.includes("symbole") || contenu.includes("※")) && !motsTrouves.has("symboleOuEmoji")) {
+        message.reply(contenu.includes("※") ? reponses["※"] : reponses["symbole"]);
         motsTrouves.add("symboleOuEmoji");
         motValide = true;
     } 
     else {
-        // Autres mots-clés
+        
         for (let mot in reponses) {
-            if (!["animal", "poulet", "symbole", "※"].includes(mot) && contenu.includes(mot.toLowerCase()) && !motsTrouves.has(mot)) {
+            if (!["animal", "poulet", "symbole", "※"].includes(mot) && contenuLower.includes(mot.toLowerCase()) && !motsTrouves.has(mot)) {
                 message.reply(reponses[mot]);
                 motsTrouves.add(mot);
                 motValide = true;
@@ -70,13 +70,14 @@ client.on('messageCreate', async message => {
     }
 
     if (!motValide) {
-        message.reply("Merci pour votre réponse. Continuez à chercher des indices !");
+        message.reply("Merci pour votre réponse mais ça ne doit pas être précisément cela. Continuez à chercher des indices !");
     }
 
     if (motsTrouves.size === motsCles.length) {
-        message.channel.send("🎉 Félicitations ! Vous avez trouvé tous les mots-clés et avez résolu cet enquête ! Maintenant à vous de faire ce qui vous semble être bon pour déjouer cette secte.");
+        message.channel.send("🎉 Félicitations ! Vous avez trouvé tous les mots-clés et avez résolu cette enquête ! Maintenant à vous de faire ce qui vous semble être bon pour déjouer cette secte.");
         motsTrouves.clear(); 
     }
 });
 
-client.login('discord_token'); 
+
+client.login('token_discord'); 
