@@ -12,7 +12,9 @@ const client = new Client({
 const allowedChannelId = "1409818460099448832";
 
 
+
 const motsCles = ["rituel", "animalOuPoule", "symboleOuEmoji", "montjuzet"];
+
 
 
 let motsTrouves = new Set();
