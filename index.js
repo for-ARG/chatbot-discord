@@ -8,14 +8,12 @@ const client = new Client({
     ]
 });
 
-// ID du salon texte
 const allowedChannelId = "1409818460099448832";
 
-// Liste des mots-clés à trouver
-// On regroupe "animal/poulet" et "symbole/※" comme une seule étape chacune
+
 const motsCles = ["rituel", "animalOuPoule", "symboleOuEmoji", "montjuzet"];
 
-// Suivi des mots-clés déjà trouvés
+
 let motsTrouves = new Set();
 
 client.once('ready', async () => {
